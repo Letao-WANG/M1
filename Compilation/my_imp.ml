@@ -87,5 +87,25 @@ let p = {
     name = "main";
     params = [];
     locals = [];
-    code = [Set("zero", Cst 0); Expr(Call("chiffres", [Var "zero"]))]}; f]
+    code = [Set("zero", Cst 0); Expr(Call("chiffres", [Var "zero"]))]};
+    f]
 }
+
+(** 
+type value = 
+  | VInt of int
+  | VBool of bool
+  | Undef
+
+let vint = function
+  | VInt n -> n
+  | _ -> assert false
+
+let vbool = function
+  | VBool b -> b
+  | _ -> assert false
+
+exception EReturn of value
+*)
+
+let () = print_endline "TEST"
