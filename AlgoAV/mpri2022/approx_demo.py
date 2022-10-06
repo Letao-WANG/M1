@@ -52,9 +52,29 @@ def eval_sol(graph,terms,sol):
 
 
 
-# compute a approximate solution to the steiner problem
-def approx_steiner(graph,terms):
-    res=[]
+def approx_steiner(graph, terms):
+    """
+    compute a approximate solution to the steiner problem
+    """
+    # Find the shortest weighted paths of the original graph
+    len_path = dict(nx.all_pairs_dijkstra(graph))
+    # The complete graph of terminals
+    comp_graph = nx.complete_graph(terms)
+    # Add weight to the edges
+    # print(comp_graph.edges)
+    for e in comp_graph.edges:
+        comp_graph[e[0]][e[1]]['weight'] = len_path[e[0]][0][e[1]]
+        # print(e[0], "/", e[1], ":", comp_graph[e[0]][e[1]]['weight'])
+    # The minimum spanning tree of the complete graph
+    min_span_tree = nx.minimum_spanning_tree(comp_graph)
+    res = []
+    # path to edges
+    for e in min_span_tree.edges:
+        for i in range(len(len_path[e[0]][1][e[1]]) - 1):
+            res.append((len_path[e[0]][1][e[1]][i],
+                        len_path[e[0]][1][e[1]][i + 1]))
+    # return a list of edges
+    # print(res)
     return res
 
 
@@ -85,16 +105,16 @@ if __name__ == "__main__":
         terms = my_class.terms
         graph = my_class.my_graph
 
-        graph_c = nx.complete_graph(4)
-        T = nx.minimum_spanning_tree(graph_c)
-        print("Tree: " + str(T))
-        len_path = dict(nx.all_pairs_dijkstra(T))
-        print("Dict: " + str(len_path))
-        print("graph: " + str(graph_c))
+        # graph_c = nx.complete_graph(4)
+        # T = nx.minimum_spanning_tree(graph_c)
+        # print("Tree: " + str(T))
+        # len_path = dict(nx.all_pairs_dijkstra(T))
+        # print("Dict: " + str(len_path))
+        # print("graph: " + str(graph_c))
         #graph[1][2]["weight"] = 2
         #print_graph(graph, terms)
-        #sol=approx_steiner(graph,terms)
-        #print_graph(graph,terms,sol)
-        #print(eval_sol(graph,terms,sol))
+        sol=approx_steiner(graph,terms)
+        print_graph(graph,terms,sol)
+        print(eval_sol(graph,terms,sol))
 
 
