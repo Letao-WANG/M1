@@ -1,0 +1,23 @@
+(* Inefficient sum *)
+
+predicate _TO_BE_COMPLETED
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+use int.Int
+
+let sum (a b: int): (r: int)
+  requires { b >= 0 }
+  ensures  { r = a + b }
+=
+  let ref x = a in
+  let ref y = b in
+  while y > 0 do
+    invariant { y >= 0 }
+    invariant { x + y = a + b }
+    variant   { y }
+    x <- x + 1;
+    y <- y - 1
+  done;
+  x
+
+let main () = sum 32 10

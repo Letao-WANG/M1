@@ -1,0 +1,26 @@
+(* Russian peasant multiplication *)
+
+predicate _TO_BE_COMPLETED
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+use int.Int
+use int.EuclideanDivision
+
+let product (a b: int): int
+  requires { a >= 0 && b >= 0 }
+  ensures  { result = a * b }
+=
+  let ref p = a in
+  let ref q = b in
+  let ref r = 0 in
+  while q > 0 do
+    invariant { q >= 0 }
+    invariant { p * q + r = a * b }
+    variant   { q }
+    if mod q 2 = 1 then r <- r + p;
+    p <- p + p;
+    q <- div q 2
+  done;
+  r
+
+let main () = product 6 7

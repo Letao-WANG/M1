@@ -1,0 +1,34 @@
+predicate _TO_BE_COMPLETED
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+use int.Int
+use array.Array
+
+exception Not_found
+
+val midpoint (l u: int) : int
+  requires { l <= u }
+  ensures  { l <= result <= u }
+
+let binary_search (a: array int) (v: int) : int
+  requires { forall i1 i2: int. 0 <= i1 <= i2 < length a -> a[i1] <= a[i2] }
+  ensures  { 0 <= result < length a /\ a[result] = v }
+  raises   { Not_found -> forall i. 0 <= i < length a -> a[i] <> v }
+=
+  let ref l = 0 in
+  let ref u = (length a) - 1 in
+  while l <= u do
+    variant   { u - l }
+    invariant { l >= 0 }
+    invariant { u < length a }
+    invariant { l > 0 -> forall j. 0 <= j < l -> a[j] <> v }
+    invariant { u < (length a) - 1 -> forall j. u < j < length a -> a[j] <> v }
+    let m = midpoint l u in
+    if a[m] = v then
+        return m
+    else if a[m] > v then
+        u <- m - 1
+    else
+        l <- m + 1
+  done;
+  raise Not_found

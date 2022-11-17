@@ -1,0 +1,19 @@
+predicate _TO_BE_COMPLETED
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+use int.Int
+use array.Array
+
+exception Not_found
+
+let search (a: array int) (v: int) : int
+  ensures { 0 <= result < length a /\ a[result] = v }
+  raises  { Not_found -> forall i. 0 <= i < length a -> a[i] <> v }
+=
+  for i = 0 to length a - 1 do
+    invariant { forall j. 0 <= j < i -> a[j] <> v }
+    (* use "return i" when found *)
+    if a[i] = v then
+        return i
+  done;
+  raise Not_found

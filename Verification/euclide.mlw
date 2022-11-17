@@ -1,0 +1,24 @@
+(* Euclidean division *)
+
+predicate _TO_BE_COMPLETED
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+use int.Int
+
+let euclide (a b: int): (int, int)
+  requires { a >= 0 }
+  requires { b > 0 }
+  returns  { q, r -> q * b + r = a && 0 <= r && r < b}
+=
+  let ref q = 0 in
+  let ref r = a in
+  while r >= b do
+    invariant { r >= 0 }
+    invariant { r + b * q = a }
+    variant   { r }
+    r <- r - b;
+    q <- q + 1
+  done;
+  q, r
+
+let main () = euclide 42 17
