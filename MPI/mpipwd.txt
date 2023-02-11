@@ -1,0 +1,29 @@
+karim.hasnaoui
+
+
+
+wang.letao@universite-paris-saclay.fr
+
+login: mpi-20
+ID=20
+PWD: !!P4SSW0RD20??
+
+ssh -X mpi-20@ruche.mesocentre.universite-paris-saclay.fr
+
+
+
+mpi-20@ruche.mesocentre.universite-paris-saclay.fr
+
+
+
+module avail
+
+module purge
+
+module load 
+
+module unload
+
+module show [name]
+
+module list
