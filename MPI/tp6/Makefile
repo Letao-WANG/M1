@@ -6,7 +6,7 @@
 ###############################################################################
 
 # Compilers, options for compilation and link
-include ../arch/make_inc
+include ../arch/make_gnu
 
 OBJS = commsplit.o
 

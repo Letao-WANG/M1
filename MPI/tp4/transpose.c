@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
   /* Who I am */
   MPI_Comm_rank( MPI_COMM_WORLD, &rank);
 
-  MPI_Type_vector (nb_columns,2,nb_lines,MPI_DOUBLE,&type_column);
+  MPI_Type_vector (nb_columns,1,nb_lines,MPI_DOUBLE,&type_column);
   /* Type_transpose for at */
   MPI_Type_size(MPI_DOUBLE,&size_real);
   size_displacement = size_real;

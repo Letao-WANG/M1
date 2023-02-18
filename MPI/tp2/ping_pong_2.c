@@ -1,45 +1,53 @@
-/*
- * ping_pong_2.c   --- TP2 : point-to-point communications : ping-pong
- *
- * Author          : Dimitri LECAS (CNRS/IDRIS - France) <dimitri.lecas@idris.fr>
- *
-*/
-
-#include "mpi.h"
-#include <stdlib.h>
+/* block */
+#include <mpi.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-
-int main(int argc, char *argv[]) {
-  int rank,iter;
-  int nb_values=1000;
-  int tag=99;
-  double values[nb_values];
-  MPI_Status status;
-  double time_begin,time_end;
+int main(int argc,char *argv[]) {
+  int rank,i,j, size_real;
+  int nb_lines=5,nb_columns=4, tag=100;
+  int nb_lines_block=5,nb_columns_block=1;
+  double a[nb_lines][nb_columns];
+  double res[nb_columns][nb_lines];
+  MPI_Datatype type_block, type_trans;
+  MPI_Aint size_displacement;
+  MPI_Status statut;
 
   MPI_Init (&argc,&argv);
   MPI_Comm_rank (MPI_COMM_WORLD,&rank);
 
+  /* Initialization of the matrix on each process */
+  for(i=0;i<nb_lines;i++)
+    for(j=0;j<nb_columns;j++)
+      a[i][j]=i*nb_columns+j;
+
+  MPI_Type_vector (nb_lines_block,nb_columns_block,nb_columns,MPI_DOUBLE,&type_block);
+  MPI_Type_size(MPI_DOUBLE,&size_real);
+  size_displacement = size_real;
+  MPI_Type_create_hvector(nb_lines,1,size_displacement,type_block,&type_trans);
+  MPI_Type_commit(&type_trans);
+  
   if (rank == 0) {
-    for (iter = 0; iter<nb_values; iter++)
-      values[iter] = rand() / (RAND_MAX + 1.);
-    time_begin=MPI_Wtime();
-    MPI_Send(values, nb_values, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD);
-    MPI_Recv(values, nb_values, MPI_DOUBLE, 1, tag, MPI_COMM_WORLD, &status);
-    time_end=MPI_Wtime();
-    printf("Me, process 0, sent and received %d values"
-           "(last = %g) from process 1 in %f seconds.\n",
-           nb_values, values[nb_values-1], time_end-time_begin);
-    /* ? */
-  } else if(rank == 1) {
-    MPI_Recv(values, nb_values, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &status);
-    printf("Me, process 1, received %d values (last = %g)"
-           "from process 0.\n", nb_values, values[nb_values-1]);
-    MPI_Send(values, nb_values, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD);
-    printf("Me, process 1, sent %d values (last = %g)"
-           "to process 0.\n", nb_values, values[nb_values-1]);
+    printf("-------- Before sending: ------------ \n");
+    for (int iterc=0; iterc<nb_lines; iterc++) {
+      for (int iterl=0; iterl<nb_columns;iterl++) {
+        printf("%4.f ", a[iterc][iterl]);
+      }
+      printf("\n");
+    }
+    MPI_Send (a,nb_lines*nb_columns,MPI_DOUBLE,1,tag,MPI_COMM_WORLD);
+  } else {
+    MPI_Recv (res,1,type_trans,0,tag,MPI_COMM_WORLD,&statut); 
+    printf("-------- After recived: ------------ \n");
+    for (int iterc=0; iterc<nb_lines; iterc++) {
+      for (int iterl=0; iterl<nb_columns;iterl++) {
+        printf("%4.f ", res[iterc][iterl]);
+      }
+      printf("\n");
+    }
   }
+
+  /* Freeing of the datatype type_block */
+  MPI_Type_free (&type_block);
   MPI_Finalize ();
-  return 0;
 }

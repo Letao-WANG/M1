@@ -17,6 +17,7 @@ int main(int argc, char *argv[]) {
   int reorder;
   MPI_Comm commCart2D,commCart1D;
   int coordCart2D[nDimCart2D];
+  int remain_dims[nDimCart2D];
   const int m=4;
   double v[4];
   double w;
@@ -46,10 +47,11 @@ int main(int argc, char *argv[]) {
     v[0] = 1; v[1] = 2; v[2] = 3; v[3] = 4; }
 
   /* Subdividing the 2D cartesian topology with MPI_COMM_SPLIT */
+  MPI_Comm_split( commCart2D, coordCart2D[1], rank, &commCart1D);
 
   /* Process of the second column scatters the V array
    * to each process of their line */
-
+  MPI_Scatter (v,1,MPI_DOUBLE,&w,1,MPI_DOUBLE,1,commCart1D);
 
   printf("rank : %2d ; Coordoinates ( %1d , %1d ) ; W = %2f\n",
          rank, coordCart2D[0], coordCart2D[1], w);
